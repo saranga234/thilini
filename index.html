@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Love ❤</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+            height: 100vh;
+        }
+
+        /* Screen Container */
+        .container {
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Welcome Screen */
+        .screen {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .screen.active {
+            opacity: 1;
+            z-index: 2;
+        }
+
+        .welcome-screen {
+            background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6)), url('https://images.unsplash.com/photo-1518199266791-5375a83190b7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+        }
+
+        .question-screen {
+            background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6)), url('https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+        }
+
+        .gallery-screen {
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .constellation-screen {
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+        }
+
+        .closing-screen {
+            background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6)), url('https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1.5rem;
+            color: #d23669;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 1s ease;
+        }
+
+        .constellation-screen h1,
+        .gallery-screen h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        p {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            margin-bottom: 2rem;
+            max-width: 800px;
+            animation: fadeIn 1.5s ease;
+        }
+
+        .constellation-screen p,
+        .gallery-screen p {
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .btn {
+            display: inline-block;
+            background: #d23669;
+            color: white;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(210, 54, 105, 0.3);
+            animation: fadeInUp 1s ease;
+            z-index: 10;
+            position: relative;
+        }
+
+        .btn:hover {
+            background: #a52a52;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(210, 54, 105, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        #answer {
+            display: none;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease;
+        }
+
+        /* Cinematic Photo Gallery */
+        .filmstrip {
+            position: relative;
+            width: 100%;
+            height: 60vh;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .film-track {
+            display: flex;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            align-items: center;
+            animation: scroll 40s linear infinite;
+        }
+
+        .photo-panel {
+            width: 25vw;
+            height: 80%;
+            margin: 0 10px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .photo-panel:hover {
+            transform: scale(1.05);
+        }
+
+        .photo-panel img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            color: white;
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .photo-panel:hover .photo-info {
+            transform: translateY(0);
+        }
+
+        /* Constellation Styles */
+        .night-sky {
+            position: relative;
+            width: 100%;
+            height: 60vh;
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .star:hover {
+            transform: scale(3);
+            background: #f9d5e5;
+        }
+        
+        .star:nth-child(2n) {
+            animation-delay: 0.5s;
+        }
+        
+        .star:nth-child(3n) {
+            animation-delay: 1s;
+        }
+        
+        .memory-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.9);
+            color: #d23669;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .star:hover .memory-tooltip {
+            opacity: 1;
+        }
+
+        .heart {
+            font-size: 3rem;
+            color: #d23669;
+            margin: 1rem 0;
+            animation: pulse 1.5s infinite, beat 1.5s infinite;
+        }
+
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 1.5rem;
+            color: #d23669;
+            opacity: 0;
+            animation: float 6s linear infinite;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes beat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-20vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(calc(-25vw * 7));
+            }
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; }
+            100% { opacity: 1; }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .photo-panel {
+                width: 40vw;
+                height: 70%;
+            }
+            
+            .btn {
+                padding: 0.7rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            @keyframes scroll {
+                0% {
+                    transform: translateX(0);
+                }
+                100% {
+                    transform: translateX(calc(-40vw * 7));
+                }
+            }
+        }
+
+        @media (max-width: 480px) {
+            .photo-panel {
+                width: 60vw;
+                height: 60%;
+            }
+
+            @keyframes scroll {
+                0% {
+                    transform: translateX(0);
+                }
+                100% {
+                    transform: translateX(calc(-60vw * 7));
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Floating Hearts Background -->
+        <div class="floating-hearts" id="floatingHearts"></div>
+
+        <!-- Welcome Screen -->
+        <div class="screen welcome-screen active" id="welcomeScreen">
+            <h1>Welcome to Saranga Life Partner</h1>
+            <p>You are the most precious person in my life ❤</p>
+            <button class="btn" onclick="nextScreen('questionScreen')">Continue</button>
+        </div>
+
+        <!-- Question Screen -->
+        <div class="screen question-screen" id="questionScreen">
+            <h1>Who are the most important people in your life?</h1>
+            <button class="btn" onclick="showAnswer()">Click to Reveal</button>
+            <div id="answer">
+                <p>Mom, two siblings, mother, and you, my love ❤</p>
+            </div>
+            <button class="btn" id="nextBtn" onclick="nextScreen('galleryScreen')" style="display: none;">See Our Memories</button>
+        </div>
+
+        <!-- Gallery Screen -->
+        <div class="screen gallery-screen" id="galleryScreen">
+            <h1>Our Journey Together</h1>
+            <p>Every moment with you is a beautiful memory</p>
+            
+            <div class="filmstrip">
+                <div class="film-track" id="filmTrack">
+                    <!-- Photo 1 -->
+                    <div class="photo-panel">
+                        <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="Our Memory">
+                        <div class="photo-info">
+                            <h3>Our First Date</h3>
+                            <p>The day I knew you were special</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Photo 2 -->
+                    <div class="photo-panel">
+                        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="Our Memory">
+                        <div class="photo-info">
+                            <h3>Beach Day</h3>
+                            <p>Sun, sand and your beautiful smile</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Photo 3 -->
+                    <div class="photo-panel">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="Our Memory">
+                        <div class="photo-info">
+                            <h3>Winter Magic</h3>
+                            <p>Keeping each other warm</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Photo 4 -->
+                    <div class="photo-panel">
+                        <img src="https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="Our Memory">
+                        <div class="photo-info">
+                            <h3>Anniversary</h3>
+                            <p>Celebrating us</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Photo 5 -->
+                    <div class="photo-panel">
+                        <img src="https://images.unsplash.com/photo-1494774157365-9e04c6720e47?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="Our Memory">
+                        <div class="photo-info">
+                            <h3>Weekend Getaway</h3>
+                            <p>Just you and me against the world</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Photo 6 -->
+                    <div class="photo-panel">
+                        <img src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="Our Memory">
+                        <div class="photo-info">
+                            <h3>Date Night</h3>
+                            <p>You take my breath away</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Photo 7 -->
+                    <div class="photo-panel">
+                        <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="Our Memory">
+                        <div class="photo-info">
+                            <h3>Everyday Love</h3>
+                            <p>The little moments mean the most</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Duplicate photos for seamless looping -->
+                    <div class="photo-panel">
+                        <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="Our Memory">
+                        <div class="photo-info">
+                            <h3>Our First Date</h3>
+                            <p>The day I knew you were special</p>
+                        </div>
+                    </div>
+                    
+                    <div class="photo-panel">
+                        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="Our Memory">
+                        <div class="photo-info">
+                            <h3>Beach Day</h3>
+                            <p>Sun, sand and your beautiful smile</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="nextScreen('constellationScreen')">To Our Starry Memories</button>
+        </div>
+
+        <!-- Constellation Screen -->
+        <div class="screen constellation-screen" id="constellationScreen">
+            <h1>Our Love Written in the Stars</h1>
+            <p>Click on the stars to discover our memories</p>
+            
+            <div class="night-sky">
+                <!-- Star 1 -->
+                <div class="star" style="top:20%; left:15%;" onclick="showMemory(1)">
+                    <div class="memory-tooltip">Our first kiss ✨</div>
+                </div>
+                <!-- Star 2 -->
+                <div class="star" style="top:30%; left:70%;" onclick="showMemory(2)">
+                    <div class="memory-tooltip">That joke only we get 😂</div>
+                </div>
+                <!-- Star 3 -->
+                <div class="star" style="top:60%; left:40%;" onclick="showMemory(3)">
+                    <div class="memory-tooltip">When you cheered me up 🥹</div>
+                </div>
+                <!-- Star 4 -->
+                <div class="star" style="top:80%; left:25%;" onclick="showMemory(4)">
+                    <div class="memory-tooltip">Our secret spot 💫</div>
+                </div>
+                <!-- Star 5 -->
+                <div class="star" style="top:40%; left:50%;" onclick="showMemory(5)">
+                    <div class="memory-tooltip">The way your eyes sparkle ✨</div>
+                </div>
+                <!-- Star 6 -->
+                <div class="star" style="top:50%; left:80%;" onclick="showMemory(6)">
+                    <div class="memory-tooltip">Your laugh that lights up my world 🌟</div>
+                </div>
+                <!-- Star 7 -->
+                <div class="star" style="top:70%; left:60%;" onclick="showMemory(7)">
+                    <div class="memory-tooltip">The way you understand me without words 💖</div>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="nextScreen('closingScreen')">To My Final Message</button>
+        </div>
+
+        <!-- Closing Screen -->
+        <div class="screen closing-screen" id="closingScreen">
+            <div class="heart">❤</div>
+            <h1>I Love You to My Life</h1>
+            <p>You make every moment special. Thank you for being mine.</p>
+        </div>
+    </div>
+
+    <script>
+        // Screen navigation
+        function nextScreen(screenId) {
+            document.querySelector('.screen.active').classList.remove('active');
+            document.getElementById(screenId).classList.add('active');
+            
+            // Reset gallery animation when entering
+            if (screenId === 'galleryScreen') {
+                const filmTrack = document.getElementById('filmTrack');
+                filmTrack.style.animation = 'none';
+                setTimeout(() => {
+                    filmTrack.style.animation = 'scroll 40s linear infinite';
+                }, 10);
+            }
+        }
+
+        // Show answer
+        function showAnswer() {
+            document.getElementById('answer').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'inline-block';
+        }
+
+        // Show memory from constellation
+        function showMemory(num) {
+            const memories = [
+                "Our first kiss ✨",
+                "That joke only we get 😂",
+                "When you cheered me up 🥹",
+                "Our secret spot 💫",
+                "The way your eyes sparkle ✨",
+                "Your laugh that lights up my world 🌟",
+                "The way you understand me without words 💖"
+            ];
+            
+            alert(memories[num-1]);
+        }
+
+        // Create floating hearts
+        function createHearts() {
+            const container = document.getElementById('floatingHearts');
+            const heartCount = 15;
+            
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('floating-heart');
+                heart.innerHTML = '❤';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = 3 + Math.random() * 7 + 's';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(heart);
+            }
+        }
+
+        // Initialize
+        window.onload = function() {
+            createHearts();
+            
+            // Add random stars to constellation
+            const nightSky = document.querySelector('.night-sky');
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 5 + 's';
+                nightSky.appendChild(star);
+            }
+        };
+    </script>
+</body>
+</html>
